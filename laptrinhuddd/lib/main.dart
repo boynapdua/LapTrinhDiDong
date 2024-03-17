@@ -1,6 +1,8 @@
 import "dart:io";
 import "package:flutter/material.dart";
 import "package:firebase_core/firebase_core.dart";
+import "package:flutter/services.dart";
+import "package:laptrinhuddd/pages/home_page.dart";
 import "widget/login.dart";
 import "widget/register.dart";
 
@@ -21,17 +23,26 @@ Future<void> main() async {
 
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  // This widget is the root of your application.
+class MyApp extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp>{
+  @override
+  void initState() {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context){
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       initialRoute: "/",
       routes: {
-        "/": (context) => MyRegister(),
+        "/": (context) => MyLogin(),
         "/register": (context) => MyRegister(),
         "/login": (context) => MyLogin(),
         //"/content": (context) => MyContent(),
