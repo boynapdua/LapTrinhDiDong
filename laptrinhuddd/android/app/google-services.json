@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "105828343703",
+    "project_id": "cocktail-2b5df",
+    "storage_bucket": "cocktail-2b5df.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:105828343703:android:1fd209bc7c4547ce00eed2",
+        "android_client_info": {
+          "package_name": "com.example.laptrinhuddd"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA4qmfFHnEUTPjhpZvl1STG5phTWKFo4II"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
