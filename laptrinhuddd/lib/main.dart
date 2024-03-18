@@ -42,7 +42,7 @@ class _MyAppState extends State<MyApp>{
       title: 'Flutter Demo',
       initialRoute: "/",
       routes: {
-        "/": (context) => MyLogin(),
+        "/": (context) => HomePage(),
         "/register": (context) => MyRegister(),
         "/login": (context) => MyLogin(),
         //"/content": (context) => MyContent(),
