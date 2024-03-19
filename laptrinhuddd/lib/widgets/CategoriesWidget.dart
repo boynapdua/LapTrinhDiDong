@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import '/widgets/OutstandingWidget.dart';
 class CategoryWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -28,6 +28,10 @@ class CategoryWidget extends StatelessWidget {
             label: "CockTail",
             onPressed: () {
               // Xử lý khi nút được nhấn
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => OutstandingWidget()),
+              );
               print("Cocktail button pressed");
             },
           ),

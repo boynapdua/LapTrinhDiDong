@@ -1,279 +1,164 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class OutStandingWidget extends StatelessWidget {
+class OutstandingWidget extends StatefulWidget {
+  @override
+  _MyCockTailState createState() => _MyCockTailState();
+}
+
+class _MyCockTailState extends State<OutstandingWidget> {
+  List<dynamic> cocktails = [];
+  Set<dynamic> favorites = Set<dynamic>();
+
+  @override
+  void initState() {
+    super.initState();
+    fetchCocktails();
+  }
+
+  Future<void> fetchCocktails() async {
+    for(int response1 = 0; response1 <= 100; response1++) {
+      final response = await http.get(Uri.parse('https://www.thecocktaildb.com/api/json/v1/1/random.php'));
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        setState(() {
+          cocktails.add(jsonData['drinks'][0]);
+        });
+      } else {
+        throw Exception('Failed to load cocktails');
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-        child: Column(
-          children: [
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('List Cocktail', textAlign: TextAlign.center),
+      ),
+      backgroundColor: Colors.black,
+      body: cocktails.isEmpty ? _buildLoadingIndicator() : _buildCocktailList(),
+    );
+  }
 
-            //Single Item
-            //for(int i=0; i<10; i++)
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 10),
-                child: Container(
-                  width: 380,
-                  height: 150,
-                  padding: EdgeInsets.all(15),
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10), // Bo góc cho container chứa hình ảnh
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 3,
-                          blurRadius: 10,
-                          offset: Offset(0, 3),
-                        )
-                      ]
-                  ),
-                  child: Row(
-                    children: [
-                      InkWell(
-                        onTap: () {},
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(15), // Bo góc cho hình ảnh
-                          child: Image.network(
-                            "https://www.thecocktaildb.com/images/media/drink/k1xatq1504389300.jpg/preview",
-                            height: 120,
-                            width: 120,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 8),
-                      Container(
-                        width: 190,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            Text(
-                              "Banana Daiquiri",
-                              style: TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold
-                              ),
-                            ),
-                            Text(
-                              "Thiết kế giao diện người dùng ứng dụng giao đồ ăn trong Flutter ",
-                              style: TextStyle(
-                                fontSize: 16,
-                              ),
-                            ),
+  Widget _buildLoadingIndicator() {
+    return Center(
+      child: CircularProgressIndicator(),
+    );
+  }
 
-                            RatingBar.builder(
-                                initialRating: 4,
-                                minRating: 1,
-                                direction: Axis.horizontal,
-                                itemCount: 5,
-                                itemSize: 18,
-                                itemPadding: EdgeInsets.symmetric(horizontal: 4),
-                                itemBuilder: (context, _) =>Icon(
-                                  Icons.star,
-                                  color: Colors.red,
-                                ),
-                                onRatingUpdate: (index){},
-                            ),
-
-                          ],
-                        ),
-                      ),
-                      Padding(padding: EdgeInsets.symmetric(vertical: 10),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Icon(
-                              Icons.favorite_border,
-                              color: Colors.red,
-                              size: 26,
-                            )
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
+  Widget _buildCocktailList() {
+    return ListView.builder(
+      itemCount: cocktails.length,
+      itemBuilder: (context, index) {
+        var cocktail = cocktails[index];
+        bool isFavorite = favorites.contains(cocktail);
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.white,
+                  spreadRadius: 1,
+                  blurRadius: 2,
+                  offset: Offset(0, 1),
+                ),
+              ],
+            ),
+            child: ListTile(
+              title: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => CocktailDetails(cocktail: cocktail)),
+                  );
+                },
+                child: Text(cocktail['strDrink']),
+              ),
+              leading: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.network(
+                  cocktail['strDrinkThumb'],
+                  width: 80,
+                  height: 80,
+                  fit: BoxFit.cover,
                 ),
               ),
-
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 10),
-              child: Container(
-                width: 380,
-                height: 150,
-                padding: EdgeInsets.all(15),
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10), // Bo góc cho container chứa hình ảnh
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.5),
-                        spreadRadius: 3,
-                        blurRadius: 10,
-                        offset: Offset(0, 3),
-                      )
-                    ]
+              subtitle: _buildIngredientList(cocktail),
+              trailing: IconButton(
+                icon: Icon(
+                  isFavorite ? Icons.favorite : Icons.favorite_border,
+                  color: isFavorite ? Colors.red : null,
                 ),
-                child: Row(
-                  children: [
-                    InkWell(
-                      onTap: () {},
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(15), // Bo góc cho hình ảnh
-                        child: Image.network(
-                          "https://www.thecocktaildb.com/images/media/drink/mrz9091589574515.jpg/preview",
-                          height: 120,
-                          width: 120,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 8),
-                    Container(
-                      width: 190,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Text(
-                            "Daiquiri",
-                            style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold
-                            ),
-                          ),
-                          Text(
-                            "Thiết kế giao diện người dùng ứng dụng giao đồ ăn trong Flutter ",
-                            style: TextStyle(
-                              fontSize: 16,
-                            ),
-                          ),
-
-                          RatingBar.builder(
-                            initialRating: 4,
-                            minRating: 1,
-                            direction: Axis.horizontal,
-                            itemCount: 5,
-                            itemSize: 18,
-                            itemPadding: EdgeInsets.symmetric(horizontal: 4),
-                            itemBuilder: (context, _) =>Icon(
-                              Icons.star,
-                              color: Colors.red,
-                            ),
-                            onRatingUpdate: (index){},
-                          ),
-
-                        ],
-                      ),
-                    ),
-                    Padding(padding: EdgeInsets.symmetric(vertical: 10),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Icon(
-                            Icons.favorite_border,
-                            color: Colors.red,
-                            size: 26,
-                          )
-                        ],
-                      ),
-                    )
-                  ],
-                ),
+                onPressed: () {    ///////////////////////// xử lý logic luu mục yêu thích ở đây
+                  setState(() {
+                    if (isFavorite) {
+                      favorites.remove(cocktail);
+                    } else {
+                      favorites.add(cocktail);
+                    }
+                  });
+                },
               ),
             ),
+          ),
+        );
+      },
+    );
+  }
 
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 10),
-              child: Container(
-                width: 380,
-                height: 150,
-                padding: EdgeInsets.all(15),
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10), // Bo góc cho container chứa hình ảnh
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.5),
-                        spreadRadius: 3,
-                        blurRadius: 10,
-                        offset: Offset(0, 3),
-                      )
-                    ]
-                ),
-                child: Row(
-                  children: [
-                    InkWell(
-                      onTap: () {},
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(15), // Bo góc cho hình ảnh
-                        child: Image.network(
-                          "https://www.thecocktaildb.com/images/media/drink/hbkfsh1589574990.jpg/preview",
-                          height: 120,
-                          width: 120,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 8),
-                    Container(
-                      width: 190,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Text(
-                            "Whiskey Sour",
-                            style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold
-                            ),
-                          ),
-                          Text(
-                            "Thiết kế giao diện người dùng ứng dụng giao đồ ăn trong Flutter ",
-                            style: TextStyle(
-                              fontSize: 16,
-                            ),
-                          ),
+  Widget _buildIngredientList(cocktail) {
+    List<Widget> ingredientWidgets = [];
+    for (var i = 1; i <= 3; i++) {
+      var ingredientKey = 'strIngredient$i';
+      var measureKey = 'strMeasure$i';
+      var ingredient = cocktail[ingredientKey];
+      var measure = cocktail[measureKey];
 
-                          RatingBar.builder(
-                            initialRating: 4,
-                            minRating: 1,
-                            direction: Axis.horizontal,
-                            itemCount: 5,
-                            itemSize: 18,
-                            itemPadding: EdgeInsets.symmetric(horizontal: 4),
-                            itemBuilder: (context, _) =>Icon(
-                              Icons.star,
-                              color: Colors.red,
-                            ),
-                            onRatingUpdate: (index){},
-                          ),
-
-                        ],
-                      ),
-                    ),
-                    Padding(padding: EdgeInsets.symmetric(vertical: 10),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Icon(
-                            Icons.favorite_border,
-                            color: Colors.red,
-                            size: 26,
-                          )
-                        ],
-                      ),
-                    )
-                  ],
+      if (ingredient != null && ingredient.isNotEmpty) {
+        var ingredientText = measure != null ? '$measure $ingredient' : ingredient;
+        ingredientWidgets.add(Row(
+          children: [
+            Text(
+              '• ',
+              style: TextStyle(fontSize: 12),
+            ),
+            Expanded(
+              child: Text(
+                ingredientText,
+                style: TextStyle(
+                  fontSize: 12,
                 ),
               ),
             ),
           ],
-        ),
+        ));
+      }
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: ingredientWidgets,
+    );
+  }
+}
+
+class CocktailDetails extends StatelessWidget {
+  final dynamic cocktail;
+
+  const CocktailDetails({Key? key, required this.cocktail}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(cocktail['strDrink']),
+      ),
+      body: Center(
+        child: Text('Cocktail Details Page'),
       ),
     );
   }

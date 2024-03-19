@@ -159,7 +159,7 @@ class HomePage extends StatelessWidget {
                   ),
 
                   //Outstanding
-                  OutStandingWidget(),
+                  //OutStandingWidget(),
                 ],
               ),
             ),
