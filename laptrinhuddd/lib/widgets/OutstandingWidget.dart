@@ -211,7 +211,7 @@ class OutStandingWidget extends StatelessWidget {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(15), // Bo góc cho hình ảnh
                         child: Image.network(
-                          "https://www.thecocktaildb.com/images/media/drink/k1xatq1504389300.jpg/preview",
+                          "https://www.thecocktaildb.com/images/media/drink/hbkfsh1589574990.jpg/preview",
                           height: 120,
                           width: 120,
                           fit: BoxFit.cover,
@@ -226,7 +226,7 @@ class OutStandingWidget extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           Text(
-                            "Nana Dai",
+                            "Whiskey Sour",
                             style: TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold
