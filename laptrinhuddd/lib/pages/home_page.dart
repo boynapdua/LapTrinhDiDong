@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '/widgets/home_nav_bar.dart';
 import '/widgets/CategoriesWidget.dart';
 import '/widgets/OutStandingWidget.dart';
+import '/widgets/home_cocktail.dart';
+
 
 class HomePage extends StatelessWidget {
   @override
@@ -159,7 +161,8 @@ class HomePage extends StatelessWidget {
                   ),
 
                   //Outstanding
-                  //OutStandingWidget(),
+                  //home_cocktail(), // Add home_cocktail widget here
+                  CocktailListWidget(),
                 ],
               ),
             ),
