@@ -1,7 +1,7 @@
 import "dart:io";
 import "package:flutter/material.dart";
 import "package:firebase_core/firebase_core.dart";
-import "package:ltud/widgets/city_api.dart";
+import "package:ltud/widgets/homePage.dart";
 import "package:ltud/widgets/login.dart";
 import "package:ltud/widgets/register.dart";
 
@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       initialRoute: "/",
       routes: {
-        "/": (context) => CityList(),
+        "/": (context) => CountryList(),
         // "/register": (context) => MyRegister(),
         // "/login": (context) => MyLogin(),
         // "/content": (context) => MyContent(),
