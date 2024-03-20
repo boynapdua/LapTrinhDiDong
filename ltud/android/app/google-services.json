@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "219459450874",
+    "project_id": "ltud-3f1c7",
+    "storage_bucket": "ltud-3f1c7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:219459450874:android:e5a517448ecf2a34eb1643",
+        "android_client_info": {
+          "package_name": "com.example.ltud"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_DCWqJDkqKhkN7vz4GHFAasMJ4Fm62u8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
