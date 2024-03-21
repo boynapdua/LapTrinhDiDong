@@ -57,10 +57,16 @@ class CocktailListWidget extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => CocktailDetails(cocktail: cocktail)),
+                MaterialPageRoute(builder: (context) => CocktailDetails(cocktailId: cocktail['idDrink'])),
               );
             },
-            child: Text(cocktail['strDrink']),
+            child: Text(
+              cocktail['strDrink'],
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
           leading: ClipRRect(
             borderRadius: BorderRadius.circular(10),
@@ -87,22 +93,14 @@ class CocktailListWidget extends StatelessWidget {
 
       if (ingredient != null && ingredient.isNotEmpty) {
         var ingredientText = measure != null ? '$measure $ingredient' : ingredient;
-        ingredientWidgets.add(Row(
-          children: [
-            Text(
-              '• ',
-              style: TextStyle(fontSize: 12),
+        ingredientWidgets.add(
+          Text(
+            '• $ingredientText',
+            style: TextStyle(
+              fontSize: 14,
             ),
-            Expanded(
-              child: Text(
-                ingredientText,
-                style: TextStyle(
-                  fontSize: 12,
-                ),
-              ),
-            ),
-          ],
-        ));
+          ),
+        );
       }
     }
     return Column(
@@ -113,7 +111,7 @@ class CocktailListWidget extends StatelessWidget {
 
   Future<List<dynamic>> fetchCocktails() async {
     List<dynamic> cocktails = [];
-    for (int response1 = 0; response1 <= 6; response1++) {
+    for (int response1 = 0; response1 <= 4; response1++) {
       final response = await http.get(Uri.parse('https://www.thecocktaildb.com/api/json/v1/1/random.php'));
 
       if (response.statusCode == 200) {
@@ -128,19 +126,123 @@ class CocktailListWidget extends StatelessWidget {
 }
 
 class CocktailDetails extends StatelessWidget {
-  final dynamic cocktail;
+  final String cocktailId;
 
-  const CocktailDetails({Key? key, required this.cocktail}) : super(key: key);
+  const CocktailDetails({Key? key, required this.cocktailId}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(cocktail['strDrink']),
-      ),
-      body: Center(
-        child: Text('Cocktail Details Page'),
-      ),
+        appBar: AppBar(
+          title: FutureBuilder(
+            future: fetchCocktailDetails(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Text(
+                  'Loading...',
+                  style: TextStyle(
+                    fontSize: 18,
+                  ),
+                );
+              } else {
+                if (snapshot.hasError) {
+                  return Text(
+                    'Error: ${snapshot.error}',
+                    style: TextStyle(
+                      fontSize: 18,
+                    ),
+                  );
+                } else {
+                  final cocktail = snapshot.data as Map<String, dynamic>;
+                  return Text(
+                    cocktail['strDrink'],
+                    style: TextStyle(
+                      fontSize: 18,
+                    ),
+                  );
+                }
+              }
+            },
+          ),
+        ),
+        body: FutureBuilder(
+        future: fetchCocktailDetails(),
+    builder: (context, snapshot) {
+    if (snapshot.connectionState == ConnectionState.waiting) {
+    return Center(
+    child: CircularProgressIndicator(),
     );
+    } else {
+    if (snapshot.hasError) {
+    return Center(
+    child: Text(
+    'Error: ${snapshot.error}',
+    style: TextStyle(
+    fontSize: 18,
+    ),
+    ),
+    );
+    } else {
+    final cocktail = snapshot.data as Map<String, dynamic>;
+    return Padding(
+    padding: const EdgeInsets.all(16.0),
+    child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+    Image.network(
+    cocktail['strDrinkThumb'],
+    width: 200,
+    height: 200,
+    fit: BoxFit.cover,
+    ),
+    SizedBox(height: 20),
+    Text(
+    'Category: ${cocktail['strCategory']}',
+    style: TextStyle(
+    fontSize: 16,
+    ),
+    ),
+    Text(
+    'Glass Type: ${cocktail['strGlass']}',
+    style: TextStyle(
+    fontSize: 16,
+    ),
+    ),
+    SizedBox(height: 10),
+    Text(
+    'Instructions:',
+    style: TextStyle(
+    fontSize: 18,
+    fontWeight: FontWeight.bold,
+    ),
+    ),
+    SizedBox(height: 10),
+    Text(
+    cocktail['strInstructions'],
+    style:
+    TextStyle(
+      fontSize: 16,
+    ),
+    ),
+    ],
+    ),
+    );
+    }
+    }
+    },
+        ),
+    );
+  }
+
+  Future<Map<String, dynamic>> fetchCocktailDetails() async {
+    final response = await http.get(Uri.parse('https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=$cocktailId'));
+
+    if (response.statusCode == 200) {
+      final jsonData = json.decode(response.body);
+      final cocktail = jsonData['drinks'][0];
+      return cocktail;
+    } else {
+      throw Exception('Failed to load cocktail details');
+    }
   }
 }

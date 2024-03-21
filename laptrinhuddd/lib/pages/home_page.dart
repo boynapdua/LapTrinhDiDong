@@ -38,7 +38,9 @@ class HomePage extends StatelessWidget {
                           ),
                         ),
                         InkWell(
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.popAndPushNamed(context, '/search');
+                          },
                           child: Icon(
                             Icons.search,
                             color: Colors.white,
@@ -144,8 +146,6 @@ class HomePage extends StatelessWidget {
                       ),
                     ),
                   ),
-
-                  ///////////////////////////////// Category
                   CategoryWidget(),
 
                   Padding(

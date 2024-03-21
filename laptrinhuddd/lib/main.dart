@@ -3,6 +3,7 @@ import "package:flutter/material.dart";
 import "package:firebase_core/firebase_core.dart";
 import "package:flutter/services.dart";
 import "package:laptrinhuddd/pages/home_page.dart";
+import "package:laptrinhuddd/widgets/search.dart";
 import "widget/login.dart";
 import "widget/register.dart";
 
@@ -43,9 +44,10 @@ class _MyAppState extends State<MyApp>{
       initialRoute: "/",
       routes: {
         "/": (context) => HomePage(),
+        "/search": (context) => MySearch(),
         "/register": (context) => MyRegister(),
         "/login": (context) => MyLogin(),
-        //"/content": (context) => MyContent(),
+        //"/content": (context) => MyContent(),vod
       },
     );
   }
