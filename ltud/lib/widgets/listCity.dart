@@ -13,7 +13,7 @@ class CityList extends StatefulWidget {
 
 class _CityListState extends State<CityList> {
   List<City> citiesData = [];
-  List<String>? city = [];
+  List<String> cities = [];
   int i =0;
   @override
   void initState(){
@@ -29,24 +29,36 @@ class _CityListState extends State<CityList> {
 
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body)['data'];
-      List<City> cities = [];
+      List<City> citiesList = [];
       for (var cityJson in jsonData) {
-        cities.add(City.fromJson(cityJson));
+        citiesList.add(City.fromJson(cityJson));
       }
       setState(() {
-        citiesData = cities;
-
+        citiesData = citiesList;
+        cities.addAll(citiesData
+            .where((city) => city.country == widget.country)
+            .expand((city) => city.citiesName ?? []));
       });
 
     } else {
       print('Failed to load city data: ${response.statusCode}');
     }
   }
+  // setCity(BuildContext context, int index) {
+  //   if(citiesData[index].country == widget.country) {
+  //     return Card(
+  //       child: Text('${citiesData[index].cities}'),
+  //     );
+  //   } else {
+  //     return Text('No data!');
+  //   }
+  // }
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
+    return Scaffold(
         appBar: AppBar(
+          title: Text('City'),
+          // backgroundColor: Colors.green,
         ),
         body: Column(
           children: [
@@ -62,10 +74,19 @@ class _CityListState extends State<CityList> {
                             width: double.maxFinite,
                             height: 300,
                             child: ListView.builder(
-                              itemCount: city?.length,
+                              itemCount: cities!.length,
                               itemBuilder: (context, index) {
-                                return ListTile(
-                                  title: Text(city![index]),
+                                return ElevatedButton(
+                                    onPressed: () {
+
+                                    },
+                                    // style: ElevatedButton.styleFrom(
+                                    //   // primary: Colors.transparent, // Xóa màu nền của ElevatedButton
+                                    //   // elevation: 0, // Xóa độ nâng của ElevatedButton
+                                    //   //alignment: Alignment.centerLeft, // Đặt alignment về trái
+                                    //   // side: BorderSide.none, // Xóa viền
+                                    // ),
+                                    child: Text(cities![index])
                                 );
                               },
                             ),
@@ -77,7 +98,7 @@ class _CityListState extends State<CityList> {
             )
           ],
         ),
-      ),
-    );
+      );
+
   }
 }

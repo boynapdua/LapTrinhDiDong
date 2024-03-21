@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ltud/firebase_authentication/firebase_auth.dart';
-import '/widgets/homePage.dart';
+import '/widgets/country.dart';
 import '/widgets/login.dart';
 
 class MyRegister extends StatefulWidget {

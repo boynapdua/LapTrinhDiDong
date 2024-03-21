@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '/widgets/homePage.dart';
+import '/widgets/country.dart';
+import 'ListCountriesOut.dart';
 
 class Category extends StatelessWidget {
   @override
@@ -8,14 +9,14 @@ class Category extends StatelessWidget {
       scrollDirection: Axis.horizontal,
       child: Row(
         children: [
-          _buildCategoryButton(
-            image: "lib/img/ngonngu.png",
-            label: "Language",
-            onPressed: () {
-              // Xử lý khi nút được nhấn
-              print("button pressed");
-            },
-          ),
+          // _buildCategoryButton(
+          //   image: "lib/img/ngonngu.png",
+          //   label: "Language",
+          //   onPressed: () {
+          //     LimitedCityList();
+          //     print("button pressed");
+          //   },
+          // ),
           _buildCategoryButton(
             image: "lib/img/love.png",
             label: "Favorite",

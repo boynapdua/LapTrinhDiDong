@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:ltud/widgets/ListCountriesOut.dart';
 import '/widgets/category.dart';
 
 class HomePage extends StatefulWidget {
@@ -60,7 +61,9 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                         InkWell(
-                          onTap: () {},
+                          onTap: () {
+
+                          },
                           child: Icon(
                             Icons.search,
                             color: Colors.black,
@@ -176,6 +179,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                   ),
+                  LimitedCityList(),
                 ],
               ),
             ),
