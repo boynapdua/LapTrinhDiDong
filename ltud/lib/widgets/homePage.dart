@@ -4,13 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:ltud/models/city.dart';
 import 'package:ltud/models/country.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'listCity.dart';
 
-class CityList extends StatefulWidget {
+class CountryList extends StatefulWidget {
   @override
-  _CityListState createState() => _CityListState();
+  _CountryListListState createState() => _CountryListListState();
 }
 
-class _CityListState extends State<CityList> {
+class _CountryListListState extends State<CountryList> {
   List<City> citiesData = [];
   List<Country> countriesData = [];
 
@@ -87,33 +88,40 @@ class _CityListState extends State<CityList> {
                         return Card(
                           child: Padding(
                             padding: EdgeInsets.all(10),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                setImage(context, index),
-                                SizedBox(height: 5,),
-                                Text(
-                                  '${countriesData[index].name ?? ""}',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.black,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                Navigator.push(
+                                    context, MaterialPageRoute(builder: (context) => CityList(countriesData[index].name)));
+                              },
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  setImage(context, index),
+                                  SizedBox(height: 5,),
+                                  Text(
+                                    '${countriesData[index].name ?? ""}',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.black,
+                                    ),
                                   ),
-                                ),
-                                // if (citiesData[index].populationCounts != null)
-                                //   Column(
-                                //     crossAxisAlignment: CrossAxisAlignment.start,
-                                //     children: citiesData[index].populationCounts!.map((popCount) =>
-                                //         Text('Year: ${popCount.year ?? ''}, Value: ${popCount.value ?? ''}',
-                                //           style: TextStyle(
-                                //             fontSize: 14,
-                                //             color: Colors.grey,
-                                //           ),
-                                //         ),
-                                //     ).toList(),
+                                  // if (citiesData[index].populationCounts != null)
+                                  //   Column(
+                                  //     crossAxisAlignment: CrossAxisAlignment.start,
+                                  //     children: citiesData[index].populationCounts!.map((popCount) =>
+                                  //         Text('Year: ${popCount.year ?? ''}, Value: ${popCount.value ?? ''}',
+                                  //           style: TextStyle(
+                                  //             fontSize: 14,
+                                  //             color: Colors.grey,
+                                  //           ),
+                                  //         ),
+                                  //     ).toList(),
                                   //),
-                              ],
-                            ),
+                                ],
+                              ),
+                            )
+
                           ),
                         );
                       },
