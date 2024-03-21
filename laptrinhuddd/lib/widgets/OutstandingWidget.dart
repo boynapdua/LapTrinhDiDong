@@ -49,7 +49,7 @@ class _OutstandingWidgetState extends State<OutstandingWidget> {
       'strDrinkThumb': cocktail['strDrinkThumb'],
     }).then((value) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Cocktail added to Firestore')),
+        SnackBar(content: Text('Cocktail added to favourite cocktail')),
       );
     }).catchError((error) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -73,7 +73,21 @@ class _OutstandingWidgetState extends State<OutstandingWidget> {
       );
     });
   }
-
+  Future<void> _checkFavoriteStatus() async {
+    for (var cocktail in cocktails) {
+      await FirebaseFirestore.instance
+          .collection('cocktails')
+          .where('strDrink', isEqualTo: cocktail['strDrink'])
+          .get()
+          .then((querySnapshot) {
+        if (querySnapshot.docs.isNotEmpty) {
+          setState(() {
+            favorites.add(cocktail);
+          });
+        }
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -82,67 +96,77 @@ class _OutstandingWidgetState extends State<OutstandingWidget> {
         title: Text('List Cocktail', textAlign: TextAlign.center),
       ),
       backgroundColor: Colors.black,
-      body: ListView.builder(
-        itemCount: cocktails.length,
-        itemBuilder: (context, index) {
-          var cocktail = cocktails[index];
-          bool isFavorite = favorites.contains(cocktail);
-          return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => CocktailDetails(cocktail: cocktail)),
+      body: FutureBuilder(
+        future:  _checkFavoriteStatus(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+          } else {
+            return ListView.builder(
+              itemCount: cocktails.length,
+              itemBuilder: (context, index) {
+                var cocktail = cocktails[index];
+                bool isFavorite = favorites.contains(cocktail);
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => CocktailDetails(cocktail: cocktail)),
+                      );
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.white,
+                            spreadRadius: 1,
+                            blurRadius: 2,
+                            offset: Offset(0, 1),
+                          ),
+                        ],
+                      ),
+                      child: ListTile(
+                        title: Text(cocktail['strDrink']),
+                        leading: ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Image.network(
+                            cocktail['strDrinkThumb'],
+                            width: 80,
+                            height: 80,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        subtitle: _buildIngredientList(cocktail),
+                        trailing: IconButton(
+                          icon: Icon(
+                            isFavorite ? Icons.favorite : Icons.favorite_border,
+                            color: isFavorite ? Colors.red : null,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              if (isFavorite) {
+                                favorites.remove(cocktail);
+                                _removeCocktailFromFirestore(cocktail);
+                              } else {
+                                favorites.add(cocktail);
+                                _addCocktailToFirestore(cocktail);
+                              }
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
                 );
               },
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.white,
-                      spreadRadius: 1,
-                      blurRadius: 2,
-                      offset: Offset(0, 1),
-                    ),
-                  ],
-                ),
-                child: ListTile(
-                  title: Text(cocktail['strDrink']),
-                  leading: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: Image.network(
-                      cocktail['strDrinkThumb'],
-                      width: 80,
-                      height: 80,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  subtitle: _buildIngredientList(cocktail),
-                  trailing: IconButton(
-                    icon: Icon(
-                      isFavorite ? Icons.favorite : Icons.favorite_border,
-                      color: isFavorite ? Colors.red : null,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        if (isFavorite) {
-                          favorites.remove(cocktail);
-                          _removeCocktailFromFirestore(cocktail);
-                        } else {
-                          favorites.add(cocktail);
-                          _addCocktailToFirestore(cocktail);
-                        }
-                      });
-                    },
-                  ),
-                ),
-              ),
-            ),
-          );
+            );
+          }
         },
-      ),
+      )
+
     );
   }
 
@@ -257,4 +281,6 @@ class CocktailDetails extends StatelessWidget {
       children: ingredientWidgets,
     );
   }
+
 }
+
