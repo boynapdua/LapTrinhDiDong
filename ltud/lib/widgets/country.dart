@@ -5,6 +5,7 @@ import 'package:ltud/models/city.dart';
 import 'package:ltud/models/country.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'listCity.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CountryList extends StatefulWidget {
   @override
@@ -14,6 +15,7 @@ class CountryList extends StatefulWidget {
 class _CountryListListState extends State<CountryList> {
   List<City> citiesData = [];
   List<Country> countriesData = [];
+  Set<dynamic> favorites = Set<dynamic>();
 
   @override
   void initState(){
@@ -57,8 +59,47 @@ class _CountryListListState extends State<CountryList> {
 
  }
   }
+
+  void _addCountryToFirestore(Country country) {
+    FirebaseFirestore.instance.collection('Countrys').add({
+      'country': country.name,
+      'image': country.flag
+    }).then((value) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Country added to favourite')),
+      );
+    }).catchError((error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to add country: $error')),
+      );
+    });
+  }
+
+  void _removeCocktailFromFirestore(Country country) {
+    FirebaseFirestore.instance.collection('Countrys').where('country', isEqualTo: country.name).get().then((querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        doc.reference.delete();
+      });
+    }).then((value) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Country removed from Firestore')),
+      );
+    }).catchError((error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Country to remove cocktail: $error')),
+      );
+    });
+  }
+  Future<bool> _checkCountryExists(String countryName) async {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('Countrys')
+        .where('country', isEqualTo: countryName)
+        .get();
+    return querySnapshot.docs.isNotEmpty;
+  }
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
          appBar: AppBar(
            title: Text('Country'),
@@ -73,6 +114,8 @@ class _CountryListListState extends State<CountryList> {
                     padding: EdgeInsets.all(10),
                       itemCount: countriesData.length,
                       itemBuilder: (context, index) {
+                        var ct = countriesData[index];
+                        bool isFavorite = favorites.contains(ct);
                         return Container(
                           width: double.infinity, // Đặt chiều rộng của Container là không giới hạn để nó căn đủ theo chiều rộng của màn hình
                           decoration: BoxDecoration(
@@ -85,26 +128,68 @@ class _CountryListListState extends State<CountryList> {
                                   context, MaterialPageRoute(builder: (context) => CityList(countriesData[index].name)));
                             },
                             style: ElevatedButton.styleFrom(
-                              primary: Colors.transparent, // Xóa màu nền của ElevatedButton
+                              //primary: Colors.transparent, // Xóa màu nền của ElevatedButton
                               elevation: 0, // Xóa độ nâng của ElevatedButton
                               alignment: Alignment.centerLeft, // Đặt alignment về trái
                               side: BorderSide.none, // Xóa viền
                             ),
                             child: Row(
-                              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              // crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                setImage(context, index),
-                                SizedBox(height: 30, width: 15,),
+                                Row(
+                                  children: [
+                                    setImage(context, index),
+                                    SizedBox(height: 30, width: 15,),
 
-                                Text(
-                                  '${countriesData[index].name ?? ""}',
-                                  style: TextStyle(
-                                    fontSize: 17,
-                                    color: Colors.black,
-                                  ),
-                                  overflow: TextOverflow.visible,
+                                    Text(
+                                      '${countriesData[index].name ?? ""}',
+                                      style: TextStyle(
+                                        fontSize: 17,
+                                        color: Colors.black,
+                                      ),
+                                      overflow: TextOverflow.visible,
+                                    ),
+                                  ],
                                 ),
+                                IconButton(
+                                  onPressed: () async {
+                                    bool exists = await _checkCountryExists(ct.name!);
+                                    setState(() {
+                                      if (exists) {
+                                        favorites.remove(ct);
+                                        _removeCocktailFromFirestore(ct);
+                                      } else {
+                                        favorites.add(ct);
+                                        _addCountryToFirestore(ct);
+                                      }
+                                      isFavorite = favorites.contains(ct);
+                                    });
+                                  },
+                                  icon: FutureBuilder<bool>(
+                                    future: _checkCountryExists(ct.name!),
+                                    builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                                      if (snapshot.connectionState == ConnectionState.waiting) {
+
+                                        return CircularProgressIndicator();
+                                        // Placeholder while waiting for the result
+                                      }
+                                      if (snapshot.hasError) {
+                                        // Handle error
+                                        return Icon(Icons.error);
+                                      }
+                                      bool isFavorite = snapshot.data!;
+                                      return Icon(
+                                        isFavorite ? Icons.favorite : Icons.favorite_border,
+                                        color: isFavorite ? Colors.red : null,
+                                      );
+                                    },
+                                  ),
+                                )
+
+
+
+
                               ],
                             ),
                           ),
@@ -118,4 +203,5 @@ class _CountryListListState extends State<CountryList> {
        );
 
   }
+
 }

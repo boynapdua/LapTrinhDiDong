@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:ltud/models/city.dart';
+import 'package:ltud/widgets/cityDetail.dart';
 
 class CityList extends StatefulWidget {
   final String? country;
@@ -44,20 +45,11 @@ class _CityListState extends State<CityList> {
       print('Failed to load city data: ${response.statusCode}');
     }
   }
-  // setCity(BuildContext context, int index) {
-  //   if(citiesData[index].country == widget.country) {
-  //     return Card(
-  //       child: Text('${citiesData[index].cities}'),
-  //     );
-  //   } else {
-  //     return Text('No data!');
-  //   }
-  // }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('City'),
+          title: Text('City ${widget.country}' ),
           // backgroundColor: Colors.green,
         ),
         body: Column(
@@ -78,15 +70,13 @@ class _CityListState extends State<CityList> {
                               itemBuilder: (context, index) {
                                 return ElevatedButton(
                                     onPressed: () {
+                                      String x = cities![index];
+                                      print(x);
+                                      Navigator.push(
+                                          context, MaterialPageRoute(builder: (context) => CityDetail(x)));
 
                                     },
-                                    // style: ElevatedButton.styleFrom(
-                                    //   // primary: Colors.transparent, // Xóa màu nền của ElevatedButton
-                                    //   // elevation: 0, // Xóa độ nâng của ElevatedButton
-                                    //   //alignment: Alignment.centerLeft, // Đặt alignment về trái
-                                    //   // side: BorderSide.none, // Xóa viền
-                                    // ),
-                                    child: Text(cities![index])
+                                    child: Text(cities![index], style: TextStyle(fontSize: 24, color: Colors.black),)
                                 );
                               },
                             ),

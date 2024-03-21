@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ltud/widgets/favourite.dart';
 import '/widgets/country.dart';
 import 'ListCountriesOut.dart';
 
@@ -21,6 +22,10 @@ class Category extends StatelessWidget {
             image: "lib/img/love.png",
             label: "Favorite",
             onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => favouriteList()),
+              );
               // Xử lý khi nút được nhấn
               print("button pressed");
             },

@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import '/models/country.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'listCity.dart';
 class LimitedCityList extends StatefulWidget {
   @override
   _LimitedCityListState createState() => _LimitedCityListState();
@@ -57,15 +58,26 @@ class _LimitedCityListState extends State<LimitedCityList> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-          future: fetchCountryData(),
-          builder: (context, snapshot) {
-            // if(snapshot.connectionState == ConnectionState.done) {
-              return SizedBox(
-                height: 300, // Xác định kích thước của ListView
-                child: ListView.builder(
-                  itemCount: 10,
-                  itemBuilder: (context, index) {
-                    return Card(
+        future: fetchCountryData(),
+        builder: (context, snapshot) {
+          // if (snapshot.connectionState == ConnectionState.done) {
+            if (countriesData.length < 10) {
+              // Nếu countriesData không có đủ dữ liệu, bạn có thể hiển thị một widget khác thay vì ListView.
+              return Center(
+                child: Text('Không đủ dữ liệu'),
+              );
+            }
+            return SizedBox(
+              height: 300,
+              child: ListView.builder(
+                itemCount: 10,
+                itemBuilder: (context, index) {
+                  return Card(
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context, MaterialPageRoute(builder: (context) => CityList(countriesData[index].name)));
+                      },
                       child: Row(
                         children: [
                           SizedBox(width: 20,),
@@ -76,14 +88,18 @@ class _LimitedCityListState extends State<LimitedCityList> {
                           ),),
                         ],
                       ),
-                    );
+                    )
 
-                  },
-                ),
-              );
-          //   }
-          //   return CircularProgressIndicator();
-           }
-      );
+                  );
+                },
+              ),
+            );
+          }
+          // return Center(
+          //   child: CircularProgressIndicator(),
+          // );
+        //}
+    );
   }
+
 }
