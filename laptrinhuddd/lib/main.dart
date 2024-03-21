@@ -13,10 +13,10 @@ Future<void> main() async {
   Platform.isAndroid ?
   await Firebase.initializeApp(
       options: FirebaseOptions(
-          apiKey: 'AIzaSyA4qmfFHnEUTPjhpZvl1STG5phTWKFo4II',  // current_key
-          appId: '1:105828343703:android:1fd209bc7c4547ce00eed2',  // mobilesdk_app_id
-          messagingSenderId: '105828343703',  // project_number
-          projectId: 'cocktail-2b5df'  // project_id
+          apiKey: 'AIzaSyBXhtj4Nq09eIqZy9gG5yhh6PkmlyDq1-Q',  // current_key
+          appId: '1:868429047830:android:56c81b363c9086be206d37',  // mobilesdk_app_id
+          messagingSenderId: '868429047830',  // project_number
+          projectId: 'cooktail-3909d'  // project_id
       )
   ) : await Firebase.initializeApp();
 

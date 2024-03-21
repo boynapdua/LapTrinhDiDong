@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class OutstandingWidget extends StatefulWidget {
   @override
@@ -41,6 +42,38 @@ class _OutstandingWidgetState extends State<OutstandingWidget> {
       }
     }
   }
+
+  void _addCocktailToFirestore(dynamic cocktail) {
+    FirebaseFirestore.instance.collection('cocktails').add({
+      'strDrink': cocktail['strDrink'],
+      'strDrinkThumb': cocktail['strDrinkThumb'],
+    }).then((value) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Cocktail added to Firestore')),
+      );
+    }).catchError((error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to add cocktail: $error')),
+      );
+    });
+  }
+
+  void _removeCocktailFromFirestore(dynamic cocktail) {
+    FirebaseFirestore.instance.collection('cocktails').where('strDrink', isEqualTo: cocktail['strDrink']).get().then((querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        doc.reference.delete();
+      });
+    }).then((value) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Cocktail removed from Firestore')),
+      );
+    }).catchError((error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to remove cocktail: $error')),
+      );
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -96,8 +129,10 @@ class _OutstandingWidgetState extends State<OutstandingWidget> {
                       setState(() {
                         if (isFavorite) {
                           favorites.remove(cocktail);
+                          _removeCocktailFromFirestore(cocktail);
                         } else {
                           favorites.add(cocktail);
+                          _addCocktailToFirestore(cocktail);
                         }
                       });
                     },
@@ -142,6 +177,7 @@ class CocktailDetails extends StatelessWidget {
   final dynamic cocktail;
 
   const CocktailDetails({Key? key, required this.cocktail}) : super(key: key);
+
 
   @override
   Widget build(BuildContext context) {

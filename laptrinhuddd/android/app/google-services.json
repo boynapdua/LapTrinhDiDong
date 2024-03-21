@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "105828343703",
-    "project_id": "cocktail-2b5df",
-    "storage_bucket": "cocktail-2b5df.appspot.com"
+    "project_number": "868429047830",
+    "project_id": "cooktail-3909d",
+    "storage_bucket": "cooktail-3909d.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:105828343703:android:1fd209bc7c4547ce00eed2",
+        "mobilesdk_app_id": "1:868429047830:android:56c81b363c9086be206d37",
         "android_client_info": {
           "package_name": "com.example.laptrinhuddd"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyA4qmfFHnEUTPjhpZvl1STG5phTWKFo4II"
+          "current_key": "AIzaSyBXhtj4Nq09eIqZy9gG5yhh6PkmlyDq1-Q"
         }
       ],
       "services": {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:laptrinhuddd/widgets/favourite.dart';
 import '/widgets/OutstandingWidget.dart';
 class CategoryWidget extends StatelessWidget {
   @override
@@ -19,7 +20,10 @@ class CategoryWidget extends StatelessWidget {
             image: "lib/asset_img/love.png",
             label: "Favorite",
             onPressed: () {
-              // Xử lý khi nút được nhấn
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => favouriteList()),
+              );
               print("Love button pressed");
             },
           ),
