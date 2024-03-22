@@ -156,9 +156,9 @@ class _CountryListListState extends State<CountryList> {
                                     builder: (context, setState) {
                                       return IconButton(
                                         onPressed: () async {
-                                          favorites = await _checkCountryExists(ct.name!);
+                                          bool exits = await _checkCountryExists(ct.name!);
                                           setState(() {
-                                            if (favorites) {
+                                            if (exits) {
                                               favorites.remove(ct);
                                               _removeCocktailFromFirestore(ct);
                                             } else {
@@ -169,29 +169,29 @@ class _CountryListListState extends State<CountryList> {
                                           });
                                           //isFavorite = !isFavorite;
                                         },
-                                        icon: Icon(
-                                              isFavorite ? Icons.favorite : Icons.favorite_border,
-                                              color: isFavorite ? Colors.red : null,
-                                            ),
-                                        // icon: FutureBuilder<bool>(
-                                        //   future: _checkCountryExists(ct.name!),
-                                        //   builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-                                        //     if (snapshot.connectionState == ConnectionState.waiting) {
-
-                                        //       return CircularProgressIndicator();
-                                        //       // Placeholder while waiting for the result
-                                        //     }
-                                        //     if (snapshot.hasError) {
-                                        //       // Handle error
-                                        //       return Icon(Icons.error);
-                                        //     }
-                                        //     bool isFavorite = snapshot.data!;
-                                        //     return Icon(
+                                        // icon: Icon(
                                         //       isFavorite ? Icons.favorite : Icons.favorite_border,
                                         //       color: isFavorite ? Colors.red : null,
-                                        //     );
-                                        //   },
-                                        // ),
+                                        //     ),
+                                        icon: FutureBuilder<bool>(
+                                          future: _checkCountryExists(ct.name!),
+                                          builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                                            if (snapshot.connectionState == ConnectionState.waiting) {
+
+                                              return CircularProgressIndicator();
+                                              // Placeholder while waiting for the result
+                                            }
+                                            if (snapshot.hasError) {
+                                              // Handle error
+                                              return Icon(Icons.error);
+                                            }
+                                            bool isFavorite = snapshot.data!;
+                                            return Icon(
+                                              isFavorite ? Icons.favorite : Icons.favorite_border,
+                                              color: isFavorite ? Colors.red : null,
+                                            );
+                                          },
+                                        ),
                                       );
                                     }
                                 )

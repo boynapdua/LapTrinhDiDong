@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:http/http.dart' as http;
+import 'cocktailDetail.dart';
+import 'dart:convert';
 class favouriteList extends StatefulWidget {
 
   // final List<String> favouriteL;
@@ -9,6 +12,20 @@ class favouriteList extends StatefulWidget {
 }
 
 class _favouriteListState extends State<favouriteList> {
+  Future<List<dynamic>> fetchCocktails() async {
+    List<dynamic> cocktails = [];
+    for (int response1 = 0; response1 <= 4; response1++) {
+      final response = await http.get(Uri.parse('https://www.thecocktaildb.com/api/json/v1/1/random.php'));
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        cocktails.add(jsonData['drinks'][0]);
+      } else {
+        throw Exception('Failed to load cocktails');
+      }
+    }
+    return cocktails;
+  }
   void _removeCocktailFromFirestore(String x) {
     FirebaseFirestore.instance.collection('cocktails').doc(x).delete().then((value) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -87,7 +104,10 @@ class _favouriteListState extends State<favouriteList> {
                           backgroundImage: NetworkImage(data['strDrinkThumb']),
                         ),
                         onTap: () {
-
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(builder: (context) => CocktailDetails(cocktail: data,)),
+                          // );
                         },
                       ),
                     ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:laptrinhuddd/widgets/favourite.dart';
+import 'package:laptrinhuddd/widgets/video.dart';
 import '/widgets/OutstandingWidget.dart';
 class CategoryWidget extends StatelessWidget {
   @override
@@ -10,9 +11,12 @@ class CategoryWidget extends StatelessWidget {
         children: [
           _buildCategoryButton(
             image: "lib/asset_img/shopping.png",
-            label: "Shopping",
+            label: "Video",
             onPressed: () {
-              // Xử lý khi nút được nhấn
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => videoCocktail()),
+              );
               print("Shopping button pressed");
             },
           ),

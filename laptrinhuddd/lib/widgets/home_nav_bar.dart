@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:laptrinhuddd/widgets/login.dart';
+import 'package:laptrinhuddd/widgets/video.dart';
 import 'CameraScreen.dart';
 import 'ImageAnalyzer.dart';
 import 'favourite.dart';
@@ -127,10 +128,13 @@ class HomeNavBar extends StatelessWidget{
           ),
           InkWell(
             onTap: () {
-              // Xử lý khi nhấn vào nút thông báo
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => videoCocktail())
+              );
             },
             child: Icon(
-              Icons.notifications,
+              Icons.video_camera_back_outlined,
               color: Colors.white,
               size: 35,
             ),
