@@ -1,7 +1,7 @@
 //import 'package:authenticationapp/home.dart';
-import 'package:laptrinhuddd/pages/home_page.dart';
+import 'package:laptrinhuddd/widgets/home_page.dart';
 
-import '/widget/login.dart';
+import '/widgets/login.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:laptrinhuddd/firebase_authentication/firebase_auth.dart';

@@ -2,10 +2,10 @@ import "dart:io";
 import "package:flutter/material.dart";
 import "package:firebase_core/firebase_core.dart";
 import "package:flutter/services.dart";
-import "package:laptrinhuddd/pages/home_page.dart";
+import "package:laptrinhuddd/widgets/home_page.dart";
 import "package:laptrinhuddd/widgets/search.dart";
-import "widget/login.dart";
-import "widget/register.dart";
+import "widgets/login.dart";
+import "widgets/register.dart";
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

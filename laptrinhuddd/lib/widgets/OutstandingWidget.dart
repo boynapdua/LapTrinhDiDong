@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'cocktailDetail.dart';
 
 class OutstandingWidget extends StatefulWidget {
   @override
@@ -27,15 +28,20 @@ class _OutstandingWidgetState extends State<OutstandingWidget> {
   }
 
   Future<void> fetchCocktails() async {
+    Set<String> seenCocktailNames = Set<String>();
     for(int response1 = 0; response1 <= 100; response1++) {
       final response = await httpClient.get(Uri.parse('https://www.thecocktaildb.com/api/json/v1/1/random.php'));
 
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
-        if (mounted) { // Kiểm tra trước khi gọi setState()
-          setState(() {
-            cocktails.add(jsonData['drinks'][0]);
-          });
+        var drinkName = jsonData['drinks'][0]['strDrink'];
+        if (!seenCocktailNames.contains(drinkName)) {
+          seenCocktailNames.add(drinkName);
+          if (mounted) { // Kiểm tra trước khi gọi setState()
+            setState(() {
+              cocktails.add(jsonData['drinks'][0]);
+            });
+          }
         }
       } else {
         throw Exception('Failed to load cocktails');
@@ -73,36 +79,24 @@ class _OutstandingWidgetState extends State<OutstandingWidget> {
       );
     });
   }
-  Future<void> _checkFavoriteStatus() async {
-    for (var cocktail in cocktails) {
-      await FirebaseFirestore.instance
-          .collection('cocktails')
-          .where('strDrink', isEqualTo: cocktail['strDrink'])
-          .get()
-          .then((querySnapshot) {
-        if (querySnapshot.docs.isNotEmpty) {
-          setState(() {
-            favorites.add(cocktail);
-          });
-        }
-      });
-    }
+  Future<bool> _checkCocktailExists(String cocktailName) async {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('cocktails')
+        .where('strDrink', isEqualTo: cocktailName)
+        .get();
+    return querySnapshot.docs.isNotEmpty;
   }
 
   @override
   Widget build(BuildContext context) {
+    cocktails.sort((a, b) => a['strDrink'].compareTo(b['strDrink']));
+    Color heartColor = Colors.red;
     return Scaffold(
       appBar: AppBar(
         title: Text('List Cocktail', textAlign: TextAlign.center),
       ),
       backgroundColor: Colors.black,
-      body: FutureBuilder(
-        future:  _checkFavoriteStatus(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-          } else {
-            return ListView.builder(
+      body:  ListView.builder(
               itemCount: cocktails.length,
               itemBuilder: (context, index) {
                 var cocktail = cocktails[index];
@@ -143,9 +137,10 @@ class _OutstandingWidgetState extends State<OutstandingWidget> {
                         trailing: IconButton(
                           icon: Icon(
                             isFavorite ? Icons.favorite : Icons.favorite_border,
-                            color: isFavorite ? Colors.red : null,
+                            color: heartColor,
                           ),
-                          onPressed: () {
+                          onPressed: () async {
+                            isFavorite = await _checkCocktailExists(cocktail['strDrink']);
                             setState(() {
                               if (isFavorite) {
                                 favorites.remove(cocktail);
@@ -154,7 +149,9 @@ class _OutstandingWidgetState extends State<OutstandingWidget> {
                                 favorites.add(cocktail);
                                 _addCocktailToFirestore(cocktail);
                               }
+                              heartColor = isFavorite ? Colors.white : Colors.red;
                             });
+                            isFavorite = !isFavorite;
                           },
                         ),
                       ),
@@ -162,10 +159,8 @@ class _OutstandingWidgetState extends State<OutstandingWidget> {
                   ),
                 );
               },
-            );
-          }
-        },
-      )
+            ),
+
 
     );
   }
@@ -197,90 +192,5 @@ class _OutstandingWidgetState extends State<OutstandingWidget> {
   }
 }
 
-class CocktailDetails extends StatelessWidget {
-  final dynamic cocktail;
 
-  const CocktailDetails({Key? key, required this.cocktail}) : super(key: key);
-
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(cocktail['strDrink']),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: Image.network(
-                cocktail['strDrinkThumb'],
-                width: 200,
-                height: 200,
-                fit: BoxFit.cover,
-              ),
-            ),
-            SizedBox(height: 20),
-            Text(
-              'Ingredients:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10),
-            _buildIngredientList(cocktail),
-            SizedBox(height: 20),
-            Text(
-              'Instructions:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10),
-            Text(
-              cocktail['strInstructions'],
-              style: TextStyle(fontSize: 16),
-            ),
-            SizedBox(height: 20),
-            Text(
-              'Glass Type:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10),
-            Text(
-              cocktail['strGlass'],
-              style: TextStyle(fontSize: 16),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildIngredientList(cocktail) {
-    List<Widget> ingredientWidgets = [];
-
-    for (var i = 1; i <= 15; i++) {
-      var ingredientKey = 'strIngredient$i';
-      var measureKey = 'strMeasure$i';
-      var ingredient = cocktail[ingredientKey];
-      var measure = cocktail[measureKey];
-
-      if (ingredient != null && ingredient.isNotEmpty) {
-        var ingredientText = measure != null ? '$measure $ingredient' : ingredient;
-        ingredientWidgets.add(
-          Text(
-            '• $ingredientText',
-            style: TextStyle(
-              fontSize: 14,
-            ),
-          ),
-        );
-      }
-    }
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: ingredientWidgets,
-    );
-  }
-
-}
 

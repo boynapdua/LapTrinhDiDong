@@ -152,44 +152,49 @@ class _CountryListListState extends State<CountryList> {
                                     ),
                                   ],
                                 ),
-                                IconButton(
-                                  onPressed: () async {
-                                    bool exists = await _checkCountryExists(ct.name!);
-                                    setState(() {
-                                      if (exists) {
-                                        favorites.remove(ct);
-                                        _removeCocktailFromFirestore(ct);
-                                      } else {
-                                        favorites.add(ct);
-                                        _addCountryToFirestore(ct);
-                                      }
-                                      isFavorite = favorites.contains(ct);
-                                    });
-                                  },
-                                  icon: FutureBuilder<bool>(
-                                    future: _checkCountryExists(ct.name!),
-                                    builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-                                      if (snapshot.connectionState == ConnectionState.waiting) {
+                                StatefulBuilder(
+                                    builder: (context, setState) {
+                                      return IconButton(
+                                        onPressed: () async {
+                                          favorites = await _checkCountryExists(ct.name!);
+                                          setState(() {
+                                            if (favorites) {
+                                              favorites.remove(ct);
+                                              _removeCocktailFromFirestore(ct);
+                                            } else {
+                                              favorites.add(ct);
+                                              _addCountryToFirestore(ct);
+                                            }
+                                            isFavorite = !isFavorite;
+                                          });
+                                          //isFavorite = !isFavorite;
+                                        },
+                                        icon: Icon(
+                                              isFavorite ? Icons.favorite : Icons.favorite_border,
+                                              color: isFavorite ? Colors.red : null,
+                                            ),
+                                        // icon: FutureBuilder<bool>(
+                                        //   future: _checkCountryExists(ct.name!),
+                                        //   builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                                        //     if (snapshot.connectionState == ConnectionState.waiting) {
 
-                                        return CircularProgressIndicator();
-                                        // Placeholder while waiting for the result
-                                      }
-                                      if (snapshot.hasError) {
-                                        // Handle error
-                                        return Icon(Icons.error);
-                                      }
-                                      bool isFavorite = snapshot.data!;
-                                      return Icon(
-                                        isFavorite ? Icons.favorite : Icons.favorite_border,
-                                        color: isFavorite ? Colors.red : null,
+                                        //       return CircularProgressIndicator();
+                                        //       // Placeholder while waiting for the result
+                                        //     }
+                                        //     if (snapshot.hasError) {
+                                        //       // Handle error
+                                        //       return Icon(Icons.error);
+                                        //     }
+                                        //     bool isFavorite = snapshot.data!;
+                                        //     return Icon(
+                                        //       isFavorite ? Icons.favorite : Icons.favorite_border,
+                                        //       color: isFavorite ? Colors.red : null,
+                                        //     );
+                                        //   },
+                                        // ),
                                       );
-                                    },
-                                  ),
+                                    }
                                 )
-
-
-
-
                               ],
                             ),
                           ),

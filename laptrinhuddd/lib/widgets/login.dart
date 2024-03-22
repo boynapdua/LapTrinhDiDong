@@ -1,10 +1,10 @@
 
 //import 'package:authenticationapp/home.dart';
-import 'package:laptrinhuddd/widget/register.dart';
+import 'package:laptrinhuddd/widgets/register.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:laptrinhuddd/firebase_authentication/firebase_auth.dart';
-import 'package:laptrinhuddd/pages/home_page.dart';
+import 'package:laptrinhuddd/widgets/home_page.dart';
 
 class MyLogin extends StatefulWidget {
   const MyLogin({super.key});
