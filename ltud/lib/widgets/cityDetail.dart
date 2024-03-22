@@ -59,58 +59,52 @@ class _CityDetailState extends State<CityDetail> {
               );
             }
             else {
-              return ListView.builder(
-                itemCount: snapshot.data!.length,
-                itemBuilder: (context, index) {
-                  List<String> populationInfo = [];
-                  if (snapshot.data![index].populationCounts != null) {
-                    snapshot.data![index].populationCounts!.forEach((element) {
-                      populationInfo.add('Năm: ${element.year}: ${element.value}');
-                    });
-                  }
-                  return ListTile(
-                    title: Text('City: ' + '${snapshot.data![index].city ?? ''}', style: TextStyle(fontSize: 16),),
-                    subtitle: Text('Country: ' +'${snapshot.data![index].country ?? ''}', style: TextStyle(fontSize: 16),),
-                    trailing: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: populationInfo
-                          .map((info) => Text(info))
-                          .toList(),
+                return  Align(
+                  alignment: Alignment.topLeft,
+                  child: Container(
+                    height: 500,
+                    child: ListView.builder(
+                      itemCount: snapshot.data!.length,
+                      itemBuilder: (context, index) {
+                        List<String> populationInfo = [];
+                        if (snapshot.data![index].populationCounts != null) {
+                          snapshot.data![index].populationCounts!.forEach((element) {
+                            populationInfo.add('Năm: ${element.year}: ${element.value}');
+                          });
+                        }
+                        return Container(
+                          height: 200,
+                          child: ListTile(
+                              title: Text('City: ' + '${snapshot.data![index].city ?? ''}', style: TextStyle(fontSize: 16),),
+                              subtitle: Text('Country: ' +'${snapshot.data![index].country ?? ''}', style: TextStyle(fontSize: 16),),
+                              trailing:  IntrinsicHeight(
+                                child: SingleChildScrollView(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: populationInfo
+                                        .map((info) => Text(info))
+                                        .toList(),
+                                  ),
+                                ),
+                              )
+
+
+
+
+                          ) ,
+                        );
+
+                      },
                     ),
-                  );
-                },
-              );
+                  ),
+                );
+
+
 
             }
           },
         ),
       ),
     );
-      // body: Column(
-      //   children: [
-      //     Expanded(
-      //       child: Padding(
-      //         padding: EdgeInsets.all(10),
-      //         child: ,
-              // child: Column(
-              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //   crossAxisAlignment: CrossAxisAlignment.start,
-              //   children: [
-              //     Text('City: ${selectedCity?.city ?? ''}'),
-              //     Text('Country: ${selectedCity?.country ?? ''}'),
-              //     Text('Population Counts:'),
-              //     if (selectedCity?.populationCounts != null)
-              //       for (var count in selectedCity!.populationCounts!)
-              //         Text(
-              //           'Year: ${count.year}, Value: ${count.value}',
-              //         ),
-              //   ],
-              // ),
-
-    //         ),
-    //       )
-    //     ],
-    //   ),
-    // );
   }
 }

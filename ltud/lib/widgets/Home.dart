@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:ltud/widgets/ListCountriesOut.dart';
+import 'package:ltud/widgets/citySearch.dart';
 import '/widgets/category.dart';
 
 class HomePage extends StatefulWidget {
@@ -29,40 +30,13 @@ class _HomePageState extends State<HomePage> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Expanded(
-                          child: TextField(
-                            style: TextStyle(color: Colors.black),
-                            decoration: InputDecoration(
-                              hintText: 'Search...',
-                              hintStyle: TextStyle(color: Colors.black.withOpacity(0.5)),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                                borderSide: BorderSide(color: Colors.black),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                                borderSide: BorderSide(color: Colors.black),
-                              ),
-                              filled: true,
-                              fillColor: Colors.white,
-                              contentPadding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 10.0),
-                            ),
-                            textInputAction: TextInputAction.search,
-                            onTap: () {
-                              setState(() {
-                                isSearchFocused = true;
-                              });
-                            },
-                            onSubmitted: (value) {
-                              setState(() {
-                                isSearchFocused = false;
-                              });
-                            },
-                          ),
-                        ),
+
+
                         InkWell(
                           onTap: () {
-
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => CitySearch()));
                           },
                           child: Icon(
                             Icons.search,
